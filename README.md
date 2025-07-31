@@ -1,9 +1,9 @@
-# 🏥 SmartOPDAgent – Multi-Agent AI System for Hospital OPD Management
+# SmartOPDAgent – Multi-Agent AI System for Hospital OPD Management
 
-> 🤖 Developed as part of **IBM SkillsBuild Masterclass 5**  
-> 📅 Final Submission Deadline: **August 7, 2025**  
-> 👥 Team Size: 6 Members  
-> 🎯 SDG Focus: [Goal 3 – Good Health & Well-being](https://sdgs.un.org/goals/goal3)
+> Developed as part of **IBM SkillsBuild Masterclass 5**  
+> Final Submission Deadline: **August 7, 2025**  
+> Team Size: 6 Members  
+> SDG Focus: [Goal 3 – Good Health & Well-being](https://sdgs.un.org/goals/goal3)
 
 ---
 
@@ -21,14 +21,27 @@ This project addresses the core challenges in outpatient services, such as long 
 
 ## 🧠 System Architecture
 
-             +----------------+
-             |   Main Agent   |
-             +----------------+
-                     |
-   +----------------+----------------+
-   |                                 |
+```bash
+                +----------------+
+                |   Main Agent   |
+                +----------------+
+                        |
+        +---------------+---------------+
+        |                               |
+  +------------+                 +-------------------+
+  |  Agent 1   |                 |     Agent 2       |
+  | (Booking & |                 |  (Recommender +   |
+  |  Tracking) |                 |  Feedback Matching)|
+  +------------+                 +-------------------+
+        |                               |
+        +---------------+---------------+
+                        |
+             +--------------------------+
+             |  Patient Journey Support |
+             +--------------------------+
 
 
+```
 
 ---
 
