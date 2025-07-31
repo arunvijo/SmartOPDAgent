@@ -1,6 +1,6 @@
 # SmartOPDAgent – Multi-Agent AI System for Hospital OPD Management
 
-> Developed as part of **IBM SkillsBuild Masterclass 5**  
+> Developed as part of **IBM SkillsBuild Summer Internship**  
 > Final Submission Deadline: **August 7, 2025**  
 > Team Size: 6 Members  
 > SDG Focus: [Goal 3 – Good Health & Well-being](https://sdgs.un.org/goals/goal3)
