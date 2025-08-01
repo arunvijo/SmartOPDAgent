@@ -4,12 +4,24 @@ from fastapi import FastAPI
 from api.router import route_request
 from api.schemas import ChatRequest
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
+
+
 
 # Initialize the FastAPI application
 app = FastAPI(
     title="SmartOPD Agent API",
     description="The main API gateway for the multi-agent hospital OPD system."
 )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # or ["http://localhost:3000"] for frontend security
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/", tags=["Status"])
 def health_check():
