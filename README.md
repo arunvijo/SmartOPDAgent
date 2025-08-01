@@ -20,6 +20,7 @@ This project addresses the core challenges in outpatient services, such as long 
 ---
 
 ## System Architecture
+```bash
 
                 +----------------+
                 |   Main Agent   |
@@ -39,7 +40,7 @@ This project addresses the core challenges in outpatient services, such as long 
           |  Patient Journey Support |
           +--------------------------+
 
-
+```
 ---
 
 ## Agents Overview
