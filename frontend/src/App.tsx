@@ -28,24 +28,13 @@ function App() {
 
   const simulateAgentResponse = async (userQuery: string) => {
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 1500 + 1000));
-
-    let response = '';
-
-    if (userQuery.toLowerCase().includes('book') && userQuery.toLowerCase().includes('appointment')) {
-      response = 'Sure, I can help you book an appointment. Which department or doctor are you looking for?';
-    } else if (userQuery.toLowerCase().includes('suggest') || userQuery.toLowerCase().includes('recommend')) {
-      response = 'Please share your symptoms, and I’ll match you with the right doctor.';
-    } else if (userQuery.toLowerCase().includes('status') || userQuery.toLowerCase().includes('crowd')) {
-      response = 'Real-time status: OPD is moderately crowded. Estimated waiting time: 25 minutes.';
-    } else {
-      response = 'I’m still learning to handle that query. Try asking "Book an appointment" or "Suggest a doctor for chest pain".';
-    }
-
-    setMessages(prev => [
-      ...prev,
-      { id: prev.length + 1, text: response, sender: 'bot' },
-    ]);
+    const res = await fetch("http://localhost:8000/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: userQuery }),
+    });
+    const data = await res.json();
+    setMessages(prev => [...prev, { id: prev.length + 1, text: data.reply, sender: 'bot' }]);
     setIsLoading(false);
   };
 
