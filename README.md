@@ -7,7 +7,7 @@
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 SmartOPDAgent is an intelligent **multi-agent AI chatbot system** designed to streamline hospital OPD (Outpatient Department) visits. The system uses two specialized AI agents, coordinated by a central agent, to:
 
@@ -19,9 +19,8 @@ This project addresses the core challenges in outpatient services, such as long 
 
 ---
 
-## 🧠 System Architecture
+## System Architecture
 
-```bash
                 +----------------+
                 |   Main Agent   |
                 +----------------+
@@ -36,18 +35,16 @@ This project addresses the core challenges in outpatient services, such as long 
         |                               |
         +---------------+---------------+
                         |
-             +--------------------------+
-             |  Patient Journey Support |
-             +--------------------------+
+          +--------------------------+
+          |  Patient Journey Support |
+          +--------------------------+
 
-
-```
 
 ---
 
-## 🤖 Agents Overview
+## Agents Overview
 
-### 🔹 Main Agent (Router)
+### Main Agent (Router)
 - First point of interaction.
 - Detects patient intent:
   - If patient mentions a specific doctor → forwards to **Agent 1**
@@ -55,18 +52,18 @@ This project addresses the core challenges in outpatient services, such as long 
 
 ---
 
-### 🔹 Agent 1 – Booking & Patient Tracker
+### Agent 1 – Booking & Patient Tracker
 - **Checks doctor’s appointment slots**
 - **Books available slots**
 - Tracks patient journey with:
-  - 🧑‍⚕️ OPD crowd estimation
-  - 🚦 Real-time traffic via API
-  - 📩 Automated reminders/notifications (SMS/WhatsApp)
+  - OPD crowd estimation
+  - Real-time traffic via API
+  - Automated reminders/notifications (SMS/WhatsApp)
 - Guides patient till hospital arrival
 
 ---
 
-### 🔹 Agent 2 – Symptom-Based Doctor Recommender
+### Agent 2 – Symptom-Based Doctor Recommender
 - Uses **vectorized feedback database**
 - Matches patient's issue with real patient experiences
 - Recommends the most **suitable and available doctor**
@@ -75,7 +72,7 @@ This project addresses the core challenges in outpatient services, such as long 
 
 ---
 
-## 📦 Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|------------|
@@ -90,26 +87,26 @@ This project addresses the core challenges in outpatient services, such as long 
 
 ---
 
-## 🧪 Features & Innovation
+## Features & Innovation
 
-- ✅ **Multi-Agent Orchestration** with task-specific delegation
-- ✅ **Contextual Feedback Vectorization** for real-world doctor suggestions
-- ✅ **Real-Time Tracking** of hospital crowd and traffic
-- ✅ **Equal Opportunity Logic** to prevent bias in doctor assignment
-- ✅ **Fully Conversational** chatbot with structured routing
-
----
-
-## 🎯 Target Impact
-
-- ⏱ Reduce OPD wait time by 30–50%
-- 📈 Improve patient satisfaction
-- 💡 Help hospitals better manage OPD queues
-- 🤝 Increase access to care for semi-urban & rural users
+- **Multi-Agent Orchestration** with task-specific delegation
+- **Contextual Feedback Vectorization** for real-world doctor suggestions
+- **Real-Time Tracking** of hospital crowd and traffic
+- **Equal Opportunity Logic** to prevent bias in doctor assignment
+- **Fully Conversational** chatbot with structured routing
 
 ---
 
-## 🧾 How to Run Locally
+## Target Impact
+
+- Reduce OPD wait time by 30–50%
+- Improve patient satisfaction
+- Help hospitals better manage OPD queues
+- Increase access to care for semi-urban & rural users
+
+---
+
+## How to Run Locally
 
 ### 1. Clone the Repository
 ```bash
@@ -132,16 +129,16 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## 🧪 Demo (Coming Soon)
+## Demo (Coming Soon)
 - Agent 1: Doctor Booking + Notification
 - Agent 2: Symptom → Doctor Match
 - Vector Feedback DB (mock)
 - Real-time simulation (traffic + crowd)
 
-## 💡 UN SDG Alignment
+## UN SDG Alignment
 This project aligns with UN Sustainable Development Goal 3 – Good Health and Well-Being, by improving access to timely, efficient, and equitable outpatient services.
 
-## 👥 Team Members
+## Team Members
 
 | Name | Role |
 |-------|------------|
@@ -152,7 +149,7 @@ This project aligns with UN Sustainable Development Goal 3 – Good Health and W
 | Aaron Stephen | Streamlit UI / UX |
 | Albin Binu | Presentation + Documentation |
 
-## 📂 Project Structure
+## Project Structure
 
 ```bash
 smart-opd-agent/
@@ -168,10 +165,10 @@ smart-opd-agent/
 └── .gitignore
 ```
 
-## 📃 License
+## License
 This project is licensed under the MIT License.
 
-## 📫 Contact
+## Contact
 For queries or collaboration:
 
 - 📧 arunvijo2004@gmail.com
