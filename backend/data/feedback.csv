@@ -1,0 +1,17 @@
+feedback_id,doctor_id,patient_issue,rating
+F001,D001,"Had severe chest pain and shortness of breath. Dr. Sharma was excellent and diagnosed the issue quickly.",5
+F002,D002,"My skin rash was persistent for weeks, and Dr. Verma prescribed a cream that worked wonders.",5
+F003,D003,"Was feeling dizzy and had heart palpitations. Dr. Singh was very patient and explained everything clearly.",4
+F004,D004,"Came in for a regular fever and cold. Dr. Khan was efficient and helpful.",4
+F005,D005,"Fell and injured my knee. Dr. Iyer was fantastic in diagnosing the ligament tear.",5
+F006,D006,"I've been suffering from chronic migraines for years. Dr. Reddy's treatment plan has made a huge difference.",5
+F007,D007,"My child had a high fever. Dr. Rao was very gentle and reassuring with my son.",5
+F008,D008,"Just needed a general check-up. Dr. Menon is very thorough and has a great bedside manner.",5
+F009,D001,"Follow-up visit for high blood pressure. Dr. Sharma is always very attentive and adjusts my medication perfectly.",4
+F010,D005,"Post-surgery checkup for my shoulder. Dr. Iyer's guidance on physiotherapy was invaluable.",5
+F011,D009,"Had a very bad throat infection and ear pain. Dr. Ali diagnosed it as tonsillitis and the treatment was very effective.",5
+F012,D010,"Suffering from acid reflux and stomach issues for a long time. Dr. Kumar helped me manage it with lifestyle changes and medication.",4
+F013,D011,"I had a persistent cough and breathing difficulty. Dr. Mathew diagnosed it as bronchitis and the treatment worked well.",4
+F014,D012,"Routine yearly checkup. Dr. Nair is very professional and makes you feel comfortable.",5
+F015,D006,"Numbness in my hands was getting worse. Dr. Reddy performed some tests and found the root cause.",5
+F016,D002,"Needed a consultation for acne problems. Dr. Verma provided a comprehensive treatment plan.",4

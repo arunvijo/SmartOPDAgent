@@ -28,14 +28,30 @@ function App() {
 
   const simulateAgentResponse = async (userQuery: string) => {
     setIsLoading(true);
-    const res = await fetch("http://localhost:8000/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: userQuery }),
-    });
-    const data = await res.json();
-    setMessages(prev => [...prev, { id: prev.length + 1, text: data.reply, sender: 'bot' }]);
-    setIsLoading(false);
+    try {
+      const res = await fetch("http://localhost:8000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userQuery }),
+      });
+
+      // Check if the server responded with an error status
+      if (!res.ok) {
+        throw new Error(`Server responded with status: ${res.status}`);
+      }
+
+      const data = await res.json();
+      setMessages(prev => [...prev, { id: prev.length + 1, text: data.reply, sender: 'bot' }]);
+
+    } catch (error) {
+      console.error("Failed to fetch from backend:", error);
+      const errorMessage = "I'm sorry, I'm having trouble connecting to my brain right now. Please try again in a moment.";
+      setMessages(prev => [...prev, { id: prev.length + 1, text: errorMessage, sender: 'bot' }]);
+    
+    } finally {
+      // This will run whether the request succeeded or failed
+      setIsLoading(false);
+    }
   };
 
   const handleSendMessage = async () => {

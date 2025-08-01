@@ -1,0 +1,13 @@
+doctor_id,doctor_name,specialty,type
+D001,Dr. Priya Sharma,Cardiologist,Senior
+D002,Dr. Rahul Verma,Dermatologist,Senior
+D003,Dr. Anjali Singh,Cardiologist,Junior
+D004,Dr. Sameer Khan,General Physician,Junior
+D005,Dr. Meera Iyer,Orthopedic Surgeon,Senior
+D006,Dr. Arjun Reddy,Neurologist,Senior
+D007,Dr. Sunita Rao,Pediatrician,Senior
+D008,Dr. Vikram Menon,General Physician,Senior
+D009,Dr. Fatima Ali,ENT Specialist,Senior
+D010,Dr. Anand Kumar,Gastroenterologist,Senior
+D011,Dr. John Mathew,Pulmonologist,Junior
+D012,Dr. Kavita Nair,Gynecologist,Senior

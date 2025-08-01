@@ -205,3 +205,18 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Ignore Virtual Environments
+/backend/venv/
+/venv/
+
+# Ignore database storage
+/backend/db_storage/
+/db_storage/
+
+# Ignore Python cache files
+__pycache__/
+
+# Ignore environment files with secret keys
+.env
+backend/.env
