@@ -1,11 +1,12 @@
 // src/components/Navigation/Sidebar.tsx
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../../services/firebase";
 import { useAuth } from "../../context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { NotificationBell } from "../Alerts/NotificationBell"
 import { 
   Home, 
   MessageSquare, 
@@ -14,20 +15,33 @@ import {
   Bell, 
   User, 
   LogOut, 
-  Menu
+  Menu,
+  Shield, // Icon for Admin
+  Stethoscope // Icon for Doctor
 } from "lucide-react";
 
-const navLinks = [
+// Define the navigation links for each role
+const patientLinks = [
   { path: "/", label: "Home", icon: Home },
   { path: "/chat", label: "Chat", icon: MessageSquare },
-  { path: "/feedback", label: "Feedback", icon: Star },
   { path: "/bookings", label: "Bookings", icon: Calendar },
+  { path: "/feedback", label: "Feedback", icon: Star },
   { path: "/alerts", label: "Alerts", icon: Bell },
   { path: "/profile", label: "Profile", icon: User },
 ];
 
+const doctorLinks = [
+  { path: "/doctor/dashboard", label: "Dashboard", icon: Stethoscope },
+  { path: "/profile", label: "Profile", icon: User },
+];
+
+const adminLinks = [
+  { path: "/admin/dashboard", label: "Dashboard", icon: Shield },
+  { path: "/profile", label: "Profile", icon: User },
+];
+
 // This is the shared navigation content for both mobile and desktop
-const NavContent = ({ onLinkClick }: { onLinkClick?: () => void }) => {
+const NavContent = ({ onLinkClick, navLinks }: { onLinkClick?: () => void; navLinks: typeof patientLinks }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { userProfile } = useAuth();
@@ -79,6 +93,19 @@ const NavContent = ({ onLinkClick }: { onLinkClick?: () => void }) => {
 
 export function Sidebar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { userProfile } = useAuth();
+
+  // useMemo will re-calculate the navLinks only when the user's role changes
+  const navLinks = useMemo(() => {
+    switch (userProfile?.role) {
+      case 'admin':
+        return adminLinks;
+      case 'doctor':
+        return doctorLinks;
+      default:
+        return patientLinks;
+    }
+  }, [userProfile?.role]);
 
   return (
     <>
@@ -95,18 +122,23 @@ export function Sidebar() {
              <div className="p-4 border-b">
                 <h1 className="font-bold text-2xl">Smart OPD</h1>
              </div>
-             <NavContent onLinkClick={() => setIsMobileMenuOpen(false)} />
+             <NavContent navLinks={navLinks} onLinkClick={() => setIsMobileMenuOpen(false)} />
           </SheetContent>
         </Sheet>
-        <h1 className="font-bold text-lg sm:hidden">Smart OPD</h1>
+         <div className="flex items-center gap-3">
+    <h1 className="font-bold text-lg">Smart OPD</h1>
+    <NotificationBell />
+  </div>
       </header>
 
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col h-screen bg-background border-r w-64">
          <div className="p-4 border-b flex justify-between items-center">
-            <h1 className="font-bold text-2xl">Smart OPD</h1>
-         </div>
-         <NavContent />
+  <h1 className="font-bold text-2xl">Smart OPD</h1>
+  <NotificationBell />
+</div>
+
+         <NavContent navLinks={navLinks} />
       </aside>
     </>
   );

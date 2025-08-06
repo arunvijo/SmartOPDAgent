@@ -1,114 +1,122 @@
 // src/components/Bookings/BookingHistory.tsx
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
-import { auth, db } from "../../services/firebase"; // Make sure the path to firebase.ts is correct
-// NEW CODE - FIXES THE ERROR
-import { onAuthStateChanged } from "firebase/auth";
-import type { User } from "firebase/auth";
+import { db } from "../../services/firebase";
+import { useAuth } from "../../context/AuthContext";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
+import { format } from "date-fns";
 
-// Define a type for your booking data from Firestore
+// Booking type based on your Firestore data
 interface Booking {
-  id: string; // The document ID from Firestore
-  doctor: string;
-  date: string;
-  status: "Completed" | "Upcoming" | "Cancelled";
-  // Add any other fields you store in the database
+  id: string;
+  doctorName: string;
+  appointmentDate: string;
+  appointmentTime: string;
+  status: "COMPLETED" | "UPCOMING" | "CANCELLED";
 }
 
 export function BookingHistory() {
+  const { currentUser, isLoading: authLoading } = useAuth(); // ✅ use AuthContext
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // onAuthStateChanged is the best way to get the current user
-    // It runs once on load, and again if the user logs in or out
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setCurrentUser(user);
-      } else {
-        setCurrentUser(null);
-      }
-    });
-    
-    // Cleanup function to prevent memory leaks
-    return () => unsubscribe();
-  }, []);
+    const fetchBookings = async () => {
+      if (!currentUser) return;
 
-  useEffect(() => {
-    // This effect runs when the component loads OR when the currentUser changes
-    if (currentUser) {
-      const fetchBookings = async () => {
-        setIsLoading(true);
-        try {
-          // Create a query to get documents from the 'bookings' collection
-          // where the 'userId' field matches the current user's ID (uid)
-          const bookingsCollection = collection(db, "bookings");
-          const q = query(
-            bookingsCollection, 
-            where("userId", "==", currentUser.uid),
-            orderBy("date", "desc") // Optional: show newest bookings first
-          );
-
-          const querySnapshot = await getDocs(q);
-          
-          const userBookings = querySnapshot.docs.map(doc => ({
+      setIsLoading(true);
+      try {
+        const bookingsRef = collection(db, "bookings");
+        const q = query(
+          bookingsRef,
+          where("patientId", "==", currentUser.uid),
+          orderBy("appointmentDate", "desc")
+        );
+        const snapshot = await getDocs(q);
+        const results = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
             id: doc.id,
-            ...doc.data()
-          })) as Booking[];
+            doctorName: data.doctorName,
+            appointmentDate: data.appointmentDate,
+            appointmentTime: data.appointmentTime,
+            status: data.status.toUpperCase(),
+          };
+        }) as Booking[];
 
-          setBookings(userBookings);
-        } catch (error) {
-          console.error("Error fetching bookings: ", error);
-          // Optionally set an error state to show a message to the user
-        } finally {
-          setIsLoading(false);
-        }
-      };
+        setBookings(results);
+      } catch (error) {
+        console.error("Error fetching bookings:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
+    if (currentUser) {
       fetchBookings();
     } else {
-      // If there's no user, clear bookings and stop loading
       setBookings([]);
       setIsLoading(false);
     }
-  }, [currentUser]); // The dependency array ensures this runs when the user state changes
+  }, [currentUser]);
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
-      <div className="text-center p-4">
-        <p>Loading your booking history...</p>
+      <div className="space-y-4">
+        <Skeleton className="h-6 w-1/3" />
+        <Skeleton className="h-20 w-full rounded-xl" />
+        <Skeleton className="h-20 w-full rounded-xl" />
       </div>
     );
   }
-  
+
   if (!currentUser) {
     return (
-        <div className="text-center p-4 bg-yellow-100 border-l-4 border-yellow-500 rounded-r-lg">
-            <p className="font-semibold">Please log in to view your booking history.</p>
-        </div>
+      <Card className="text-center p-6 bg-yellow-50 border border-yellow-300">
+        <p className="font-semibold text-yellow-700">
+          Please log in to view your booking history.
+        </p>
+      </Card>
     );
   }
 
   if (bookings.length === 0) {
     return (
-      <div className="text-center p-4">
+      <Card className="p-6 text-center">
         <h2 className="text-xl font-semibold">Booking History</h2>
         <p className="mt-2 text-muted-foreground">You have no bookings yet.</p>
-      </div>
+      </Card>
     );
   }
 
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">Booking History</h2>
-      <ul className="space-y-2">
+      <Separator />
+      <ul className="space-y-4">
         {bookings.map((b) => (
-          <li key={b.id} className="p-3 border rounded-xl">
-            <p className="font-medium">{b.doctor}</p>
-            <p className="text-sm text-muted-foreground">{b.date} - {b.status}</p>
-          </li>
+          <Card key={b.id} className="p-4">
+            <CardContent className="p-0 space-y-1">
+              <p className="font-medium text-lg">{b.doctorName}</p>
+              <p className="text-sm text-muted-foreground">
+                {format(new Date(b.appointmentDate), "dd MMM yyyy")} at {b.appointmentTime}
+              </p>
+              <p
+                className={`text-sm font-semibold ${
+                  b.status === "COMPLETED"
+                    ? "text-green-600"
+                    : b.status === "CANCELLED"
+                    ? "text-red-600"
+                    : "text-blue-600"
+                }`}
+              >
+                {b.status}
+              </p>
+            </CardContent>
+          </Card>
         ))}
       </ul>
     </div>

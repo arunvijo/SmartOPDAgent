@@ -12,6 +12,9 @@ interface UserProfile {
   name?: string;
   age?: number;
   insurance?: string;
+  avatarUrl?: string; // Add this line
+  role: 'patient' | 'doctor' | 'admin'; // Add this line
+  status?: 'pending' | 'approved' | 'rejected'; // Add this line for doctors
 }
 
 // Define the shape of the context data

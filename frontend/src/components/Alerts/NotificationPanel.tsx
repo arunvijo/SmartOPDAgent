@@ -1,108 +1,144 @@
-// src/components/Alerts/NotificationPanel.tsx
+import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
+import { db } from "@/services/firebase";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Bell, Info, CheckCircle, MailOpen } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@/components/ui/toggle-group";
+import { Badge } from "@/components/ui/badge";
 
-import { useState, useEffect } from 'react';
-import { collection, query, where, onSnapshot, orderBy, Timestamp } from 'firebase/firestore';
-import { useAuth } from '@/context/AuthContext';
-import { db } from '../../services/firebase';
-import { BellRing, Info } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
-
-// Define the structure for a notification document from Firestore
 interface Notification {
   id: string;
   message: string;
-  createdAt: Timestamp;
+  createdAt: any;
   read?: boolean;
-}
-
-// A helper function to format the Firestore Timestamp into a readable string
-function formatNotificationTime(timestamp: Timestamp): string {
-  if (!timestamp) return "Just now";
-  const date = timestamp.toDate();
-  return date.toLocaleString('en-US', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  });
+  status?: string;
 }
 
 export function NotificationPanel() {
   const { currentUser } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | "unread">("all");
 
   useEffect(() => {
-    // Only set up the listener if there is a logged-in user
-    if (currentUser) {
-      setIsLoading(true);
-      const notificationsCollection = collection(db, 'notifications');
-      
-      // Create a query to get notifications for this specific user, ordered by most recent
-      const q = query(
-        notificationsCollection,
-        where('userId', '==', currentUser.uid),
-        orderBy('createdAt', 'desc')
-      );
+    if (!currentUser) return;
 
-      // onSnapshot creates a real-time listener. This function will be called
-      // immediately with the current data, and again any time the data changes.
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const userNotifications = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Notification[];
-        setNotifications(userNotifications);
-        setIsLoading(false);
-      }, (error) => {
-        // Handle any errors during the real-time fetch
-        console.error("Error fetching notifications in real-time:", error);
-        setIsLoading(false);
-      });
-
-      // This is a cleanup function. It runs when the component is unmounted
-      // to prevent memory leaks by removing the listener.
-      return () => unsubscribe();
-    } else {
-      // If no user is logged in, clear any existing notifications and stop loading.
-      setNotifications([]);
-      setIsLoading(false);
-    }
-  }, [currentUser]); // The effect depends on currentUser, so it re-runs if the user logs in or out.
-
-  if (isLoading) {
-    return (
-        <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Alerts</h2>
-            <div className="space-y-3">
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
-            </div>
-        </div>
+    const q = query(
+      collection(db, "notifications"),
+      where("userId", "==", currentUser.uid),
+      orderBy("createdAt", "desc")
     );
-  }
-  
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const notifs = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Notification[];
+
+      setNotifications(notifs);
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [currentUser]);
+
+  const handleMarkAsRead = async (notif: Notification) => {
+    if (notif.read) return;
+    const notifRef = doc(db, "notifications", notif.id);
+    await updateDoc(notifRef, { read: true });
+  };
+
+  const getIcon = (message: string, read?: boolean) => {
+    if (message.toLowerCase().includes("appointment"))
+      return <Bell className="h-5 w-5 text-primary" />;
+    if (message.toLowerCase().includes("alert"))
+      return <Info className="h-5 w-5 text-orange-500" />;
+    return read
+      ? <MailOpen className="h-5 w-5 text-muted-foreground" />
+      : <CheckCircle className="h-5 w-5 text-green-500" />;
+  };
+
+  const filteredNotifs =
+    filter === "unread"
+      ? notifications.filter((n) => !n.read)
+      : notifications;
+
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold flex items-center gap-2">
-        <BellRing className="h-6 w-6" />
-        Your Alerts
-      </h2>
-      {notifications.length > 0 ? (
-        <div className="space-y-3">
-          {notifications.map((n) => (
-            <div key={n.id} className="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
-              <p className="font-medium">{n.message}</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {formatNotificationTime(n.createdAt)}
-              </p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="p-6 text-center border-2 border-dashed rounded-lg">
-          <Info className="mx-auto h-8 w-8 text-muted-foreground" />
-          <p className="mt-2 text-sm font-medium text-muted-foreground">You have no new alerts.</p>
-        </div>
-      )}
+    <div className="flex flex-col h-full bg-background border rounded-xl shadow-md">
+      {/* Header */}
+      <div className="flex justify-between items-center px-4 py-3 border-b">
+        <h2 className="text-lg font-semibold tracking-tight">Notifications</h2>
+        <ToggleGroup
+          type="single"
+          value={filter}
+          onValueChange={(val) => setFilter((val as "all" | "unread") || "all")}
+        >
+          <ToggleGroupItem value="all">All</ToggleGroupItem>
+          <ToggleGroupItem value="unread">Unread</ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+
+      {/* Body */}
+      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2">
+        {isLoading ? (
+          <div className="space-y-3">
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-3/4" />
+            <Skeleton className="h-5 w-5/6" />
+          </div>
+        ) : filteredNotifs.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No notifications found.</p>
+        ) : (
+          <ul className="space-y-2">
+            <AnimatePresence>
+              {filteredNotifs.map((n) => (
+                <motion.li
+                  key={n.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <div
+                    className={`flex items-start gap-3 rounded-lg border p-3 transition-all cursor-pointer ${
+                      !n.read
+                        ? "bg-muted border-primary/50 shadow"
+                        : "bg-muted/60 border-border"
+                    } hover:bg-muted/80`}
+                    onClick={() => handleMarkAsRead(n)}
+                  >
+                    <div className="pt-1">{getIcon(n.message, n.read)}</div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{n.message}</p>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {n.createdAt?.toDate().toLocaleString()}
+                      </div>
+                    </div>
+                    {!n.read && (
+                      <Badge variant="outline" className="text-xs mt-1">
+                        New
+                      </Badge>
+                    )}
+                  </div>
+                </motion.li>
+              ))}
+            </AnimatePresence>
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

@@ -38,7 +38,7 @@ export const ChatInterface: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSendMessage = async () => {
+   const handleSendMessage = async () => {
     if (inputMessage.trim() === '') return;
 
     const userMsg: Message = {
@@ -47,19 +47,21 @@ export const ChatInterface: React.FC = () => {
       sender: 'user',
     };
 
-    // Add user message to state immediately for a responsive feel
     setMessages(prev => [...prev, userMsg]);
     setInputMessage('');
     setIsLoading(true);
 
     try {
-      const data = await sendToAgent(userMsg.text);
+      // --- CHANGE IS HERE ---
+      // We now pass the user's UID from the userProfile to the sendToAgent function.
+      // The `?.` is optional chaining, which safely handles the case where userProfile might be null.
+      const data = await sendToAgent(userMsg.text, userProfile?.uid);
+      
       const botMsg: Message = {
         id: Date.now() + 1,
         text: data.reply,
         sender: 'bot',
       };
-      // Use functional update to ensure we have the latest state
       setMessages(prev => [...prev, botMsg]);
     } catch (err) {
       console.error(err);
